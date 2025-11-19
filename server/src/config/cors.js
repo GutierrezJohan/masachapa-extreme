@@ -15,6 +15,13 @@ const options = {
   origin: function (origin, callback) {
     // allow requests with no origin like mobile apps or curl
     if (!origin) return callback(null, true);
+    // Always allow localhost/127.0.0.1 from any port during development
+    try {
+      const u = new URL(origin);
+      if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+        return callback(null, true);
+      }
+    } catch {}
     if (allowedOrigins.indexOf(origin) !== -1) {
       return callback(null, true);
     }

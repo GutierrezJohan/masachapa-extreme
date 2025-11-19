@@ -16,9 +16,16 @@ type Props = {
   onAdd?: (p: Product) => void;
 };
 
+import { useHistory } from 'react-router-dom';
+
 const ProductCard: React.FC<Props> = ({ product, onClick, onAdd }) => {
+  const history = useHistory();
+  const goDetail = () => {
+    if (onClick) return onClick(product);
+    history.push({ pathname: `/product/${product.id}`, state: { product } });
+  };
   return (
-    <IonCard className="product-card" onClick={() => onClick && onClick(product)}>
+    <IonCard className="product-card" onClick={goDetail}>
       <div className="card-media">
         <IonImg src={product.image || '/images/product-default.png'} alt={product.name} className="product-image" />
         {product.badge && <span className="pill">{product.badge}</span>}

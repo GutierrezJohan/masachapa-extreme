@@ -6,6 +6,15 @@ import Category from './pages/Category/Category';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Profile from './pages/Profile/Profile';
+import EditProfile from './pages/EditProfile/EditProfile';
+import Checkout from './pages/Checkout/Checkout';
+import Payment from './pages/Payment/Payment';
+
+import Success from './pages/Success/Success';
+import ProductPage from './pages/Product/Product';
+import AdminProductsList from './pages/AdminProducts/AdminProductsList';
+import AdminProductCreate from './pages/AdminProducts/AdminProductCreate';
+import AdminRoute from './components/RouteGuards/AdminRoute';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -55,9 +64,30 @@ const App: React.FC = () => (
         <Route exact path="/register">
           <Register />
         </Route>
-          <Route exact path="/profile">
-            <Profile />
-          </Route>
+        <Route exact path="/profile">
+          <Profile />
+        </Route>
+        <Route exact path="/profile/edit">
+          <EditProfile />
+        </Route>
+        <Route exact path="/checkout">
+          <Checkout />
+        </Route>
+        <Route exact path="/checkout/payment">
+          <Payment />
+        </Route>
+        <Route exact path="/checkout/success">
+          <Success />
+        </Route>
+        <Route exact path="/product/:id">
+          <ProductPage />
+        </Route>
+        <AdminRoute exact path="/admin/products">
+          <AdminProductsList />
+        </AdminRoute>
+        <AdminRoute exact path="/admin/products/new">
+          <AdminProductCreate />
+        </AdminRoute>
         <Route exact path="/">
           <Redirect to="/home" />
         </Route>

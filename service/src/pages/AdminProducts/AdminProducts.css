@@ -1,0 +1,61 @@
+/* Admin Products Styles */
+.admin-header {
+  --background: white;
+  --border-width: 0 0 1px 0;
+  --border-color: #e2e8f0;
+}
+
+.admin-content {
+  --background: #f8fafc;
+}
+
+.admin-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.product-card {
+  margin-bottom: 12px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.product-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.meta {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.badge {
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.danger {
+  --background: #fee2e2;
+  --color: #b91c1c;
+}
+
+.success {
+  --background: linear-gradient(90deg, #7c5cff, #6ee7b7);
+  --color: white;
+}

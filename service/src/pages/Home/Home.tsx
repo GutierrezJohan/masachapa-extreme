@@ -39,11 +39,13 @@ import {
   listOutline
 } from 'ionicons/icons';
 import './Home.css';
+import { getAllProducts as fetchProducts } from '../../services/ProductService';
+import { addToCart as cartAdd, getCart as cartGet, countItems as cartCountItems } from '../../services/CartService';
 import NavBar from '../../components/NavBar/NavBar';
 import { useHistory } from 'react-router-dom';
 
 type Product = {
-  id: string;
+  id: string; // stringified id for routing
   name: string;
   price: number;
   image?: string;
@@ -51,7 +53,8 @@ type Product = {
   badge?: string;
 };
 
-const SAMPLE_PRODUCTS: Product[] = [
+// Fallback local sample data for offline/error scenarios
+const FALLBACK_PRODUCTS: Product[] = [
   { id: '1', name: 'Filtro de aceite', price: 8.99, category: 'Motor', badge: 'OEM' },
   { id: '2', name: 'Pastillas de freno', price: 29.9, category: 'Frenos', badge: 'Top' },
   { id: '3', name: 'Batería 12V 65Ah', price: 119.0, category: 'Eléctrico' },
@@ -74,40 +77,8 @@ const PRODUCT_CATEGORIES = [
   { name: 'Eléctrico', icon: leafOutline },
 ];
 
-const POPULAR_PRODUCTS: Product[] = [
-  {
-    id: '2',
-    name: 'Pastillas de freno',
-    price: 29.9,
-    category: 'Frenos',
-    badge: 'Top',
-    image: 'https://images.unsplash.com/photo-1598301252104-3eaaa5ae88f0?auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    id: '4',
-    name: 'Bujías Iridium (x4)',
-    price: 39.5,
-    category: 'Motor',
-    badge: 'Nuevo',
-    image: 'https://images.unsplash.com/photo-1605733513597-a8f8341084e9?auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    id: '6',
-    name: 'Alternador 120A',
-    price: 249.0,
-    category: 'Eléctrico',
-    badge: 'Garantía',
-    image: 'https://images.unsplash.com/photo-1600004003352-5f024f5652b8?auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    id: '1',
-    name: 'Filtro de aceite',
-    price: 8.99,
-    category: 'Motor',
-    badge: 'OEM',
-    image: 'https://images.unsplash.com/photo-1598302202730-20c9c4a0f0c7?auto=format&fit=crop&w=400&q=80',
-  },
-];
+// Will be derived dynamically
+// Strategy: take top 4 by price or with a badge property if available
 
 const Home: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -115,9 +86,14 @@ const Home: React.FC = () => {
   const [cart, setCart] = useState<Product[]>([]);
   const [selected, setSelected] = useState<Product | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [popular, setPopular] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
+  const [productsError, setProductsError] = useState<string>('');
   const history = useHistory();
 
   const addToCart = (p: Product) => {
+    cartAdd({ id: p.id, nombre: p.name, precio: p.price, cantidad: 1, imagen: p.image });
     setCart(prev => [...prev, p]);
   };
 
@@ -126,16 +102,16 @@ const Home: React.FC = () => {
   };
 
   const categories = useMemo(() => {
-    return Array.from(new Set(SAMPLE_PRODUCTS.map(p => p.category).filter(Boolean))) as string[];
-  }, []);
+    return Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[];
+  }, [products]);
 
   const filtered = useMemo(() => {
-    return SAMPLE_PRODUCTS.filter(p => {
+    return products.filter(p => {
       const matchesQuery = query.trim() === '' || p.name.toLowerCase().includes(query.toLowerCase());
       const matchesCategory = !category || p.category === category;
       return matchesQuery && matchesCategory;
     });
-  }, [query, category]);
+  }, [query, category, products]);
 
   const getCategoryDescription = (categoryName: string): string => {
     const descriptions: Record<string, string> = {
@@ -156,14 +132,57 @@ const Home: React.FC = () => {
     return descriptions[categoryName] || 'Encuentra los mejores repuestos y accesorios para tu vehículo';
   };
 
-  // Efecto para mostrar las tarjetas con animación staggered
+  // Efecto para animar categorías cuando cambian
   useEffect(() => {
     const cards = document.querySelectorAll('.category-card');
     cards.forEach((card, index) => {
-      setTimeout(() => {
-        card.classList.add('visible');
-      }, 100 + (index * 50));
+      setTimeout(() => card.classList.add('visible'), 100 + index * 40);
     });
+  }, [categories]);
+
+  // Initialize cart count from localStorage
+  useEffect(() => {
+    try {
+      const list = cartGet();
+      setCart(list.map(i => ({ id: String(i.id), name: i.nombre, price: i.precio, image: i.imagen })) as any);
+    } catch {}
+  }, []);
+
+  // Fetch dynamic products from backend
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoadingProducts(true);
+      setProductsError('');
+      try {
+        const apiProducts = await fetchProducts();
+        if (!mounted) return;
+        // map backend shape to UI Product
+        const mapped: Product[] = apiProducts.map((p: any) => ({
+          id: String(p.id),
+          name: p.nombre,
+          price: p.precio,
+          image: p.imagen || p.imagen_url || '', // tolerant mapping
+          category: p.categoria || '',
+          badge: p.stock === 0 ? 'Sin stock' : undefined,
+        }));
+        setProducts(mapped);
+        // derive popular: top 4 by price
+        const popularDerived = [...mapped]
+          .sort((a, b) => b.price - a.price)
+          .slice(0, 4)
+          .map((p, idx) => ({ ...p, badge: p.badge || (idx === 0 ? 'Top' : undefined) }));
+        setPopular(popularDerived);
+      } catch (e: any) {
+        if (!mounted) return;
+        setProductsError(e.message || 'Error cargando productos');
+        setProducts([]);
+        setPopular([]);
+      } finally {
+        if (mounted) setLoadingProducts(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
 
   return (
@@ -203,7 +222,7 @@ const Home: React.FC = () => {
               </IonButton>
               <IonButton 
                 fill="clear" 
-                onClick={() => setCategory('Motor')} 
+                onClick={() => { setCategory('Motor'); history.push('/category/Motor'); }} 
                 className="secondary"
                 aria-label="Ver repuestos de motor"
               >
@@ -256,9 +275,9 @@ const Home: React.FC = () => {
             <div className="categories-view-container">
               {/* Vista de cuadrícula */}
               <div className={`category-cards-grid ${viewMode !== 'grid' ? 'inactive' : ''}`}>
-                {PRODUCT_CATEGORIES.map((cat, index) => {
+                {PRODUCT_CATEGORIES.map((cat) => {
                   const isFeatured = cat.name === 'Motor';
-                  const itemCount = SAMPLE_PRODUCTS.filter(p => p.category === cat.name).length;
+                  const itemCount = products.filter(p => p.category === cat.name).length;
                   
                   return (
                     <div 
@@ -292,8 +311,8 @@ const Home: React.FC = () => {
               
               {/* Vista de lista */}
               <div className={`category-list ${viewMode === 'list' ? 'active' : ''}`}>
-                {PRODUCT_CATEGORIES.map((cat, index) => {
-                  const itemCount = SAMPLE_PRODUCTS.filter(p => p.category === cat.name).length;
+                {PRODUCT_CATEGORIES.map((cat) => {
+                  const itemCount = products.filter(p => p.category === cat.name).length;
                   
                   return (
                     <div 
@@ -326,19 +345,26 @@ const Home: React.FC = () => {
             </div>
           </section>
 
-          {/* Sección de artículos populares MEJORADA CON IMÁGENES */}
+          {/* Sección de productos dinámica por categoría (o populares si no hay filtro) */}
           <section className="popular-items">
-            <h3>Artículos Populares</h3>
+            <h3>
+              {category ? `Productos de ${category}` : 'Nuestros Productos'}
+            </h3>
+            {category && (
+              <div style={{ margin: '8px 0 16px' }}>
+                <IonButton size="small" fill="outline" onClick={() => setCategory(null)}>Quitar filtro</IonButton>
+              </div>
+            )}
             <IonGrid>
               <IonRow>
-                {POPULAR_PRODUCTS.map(p => (
+                {(category ? filtered : popular).map(p => (
                   <IonCol size="12" sizeSm="6" sizeMd="3" key={p.id}>
                     <IonCard 
                       className="product-card" 
-                      onClick={() => setSelected(p)}
+                      onClick={() => history.push({ pathname: `/product/${p.id}`, state: { product: p } })}
                       role="button"
                       tabIndex={0}
-                      onKeyPress={(e) => e.key === 'Enter' && setSelected(p)}
+                      onKeyPress={(e) => e.key === 'Enter' && history.push({ pathname: `/product/${p.id}`, state: { product: p } })}
                       aria-label={`Ver detalles de ${p.name}`}
                     >
                       <div className="product-image-container">
@@ -373,8 +399,31 @@ const Home: React.FC = () => {
                     </IonCard>
                   </IonCol>
                 ))}
+                {!loadingProducts && (category ? filtered.length === 0 : popular.length === 0) && (
+                  <IonCol size="12">
+                    {category ? (
+                      <div style={{ textAlign: 'center', padding: '24px', opacity: 0.7 }}>
+                        No hay productos para esta categoría.
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '24px', opacity: 0.7 }}>
+                        No hay productos disponibles.
+                      </div>
+                    )}
+                  </IonCol>
+                )}
+                {loadingProducts && (
+                  <IonCol size="12">
+                    <div style={{ textAlign: 'center', padding: '24px' }}>
+                      Cargando productos...
+                    </div>
+                  </IonCol>
+                )}
               </IonRow>
             </IonGrid>
+            {productsError && (
+              <div style={{ marginTop: '12px', textAlign: 'center', color: '#b91c1c', fontSize: '0.85rem' }}>{productsError}</div>
+            )}
           </section>
         </div>
 

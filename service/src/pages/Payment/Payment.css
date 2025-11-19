@@ -1,0 +1,7 @@
+/* Payment page styles */
+.payment-container { max-width: 980px; margin: 0 auto; padding: 24px 12px 48px; }
+.method-list { display: grid; gap: 12px; }
+.method-card { border: 1px solid #eef2f7; border-radius: 16px; padding: 12px; background: #fff; cursor: pointer; }
+.method-card.active { outline: 2px solid #7c5cff; box-shadow: 0 8px 24px rgba(124,92,255,0.18); }
+.inline-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .inline-fields { grid-template-columns: 1fr; } }

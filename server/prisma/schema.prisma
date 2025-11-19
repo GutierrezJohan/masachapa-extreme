@@ -97,6 +97,7 @@ model Usuario {
   password       String         @db.VarChar(255)
   nombre         String         @db.VarChar(100)
   telefono       String?        @db.VarChar(20)
+  avatar_url     String?        @db.VarChar(500)
   fecha_registro DateTime?      @default(now()) @db.DateTime(0)
   activo         Boolean?       @default(true)
   tipo           Usuario_tipo
