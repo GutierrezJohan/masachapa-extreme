@@ -1,0 +1,74 @@
+/* NUEVO: Contenedor wrapper para centrado */
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* CONTENEDOR DE IONIC - ESTILOS MÍNIMOS */
+.register-content {
+  --background: transparent !important;
+  background: linear-gradient(180deg, #7c5cff22 0%, #6ee7b722 100%) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* CONTENEDOR PRINCIPAL - SIN CAMBIOS */
+.register-container {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(124,92,255,0.12);
+  padding: 38px 32px 32px 32px;
+  max-width: 380px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.register-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #7c5cff;
+  margin-bottom: 8px;
+}
+.register-subtitle {
+  font-size: 1.2rem;
+  color: #222;
+  margin-bottom: 24px;
+}
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.register-item {
+  --background: #f3f4f6;
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+.register-input {
+  font-size: 1rem;
+}
+.register-btn {
+  --background: linear-gradient(90deg, #7c5cff 0%, #6ee7b7 100%);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+.register-error {
+  color: #e53e3e;
+  background: #fff0f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  text-align: center;
+}

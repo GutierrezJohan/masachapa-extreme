@@ -1,0 +1,92 @@
+/* Enlace de registro debajo del formulario */
+.login-links {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 1rem;
+}
+.register-link {
+  color: #7c5cff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .16s;
+}
+.register-link:hover {
+  color: #6ee7b7;
+  text-decoration: underline;
+}
+
+/* CONTENEDOR PRINCIPAL - CORREGIDO */
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #7c5cff;
+  margin-bottom: 8px;
+}
+.login-subtitle {
+  font-size: 1.2rem;
+  color: #222;
+  margin-bottom: 24px;
+}
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login-item {
+  --background: #f3f4f6;
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+.login-input {
+  font-size: 1rem;
+}
+.login-btn {
+  --background: linear-gradient(90deg, #7c5cff 0%, #6ee7b7 100%);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+.login-error {
+  color: #e53e3e;
+  background: #fff0f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* Eliminamos todos los estilos de posicionamiento del .login-content */
+.login-content {
+  --background: transparent !important;
+  background: linear-gradient(180deg, #7c5cff22 0%, #6ee7b722 100%) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Nuevo contenedor wrapper que manejará el centrado */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Altura mínima del viewport completo */
+  width: 100%;
+  padding: 20px; /* Espacio para dispositivos móviles pequeños */
+  box-sizing: border-box;
+}
+
+/* Mantenemos los estilos del contenedor de login */
+.login-container {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(124,92,255,0.12);
+  padding: 38px 32px 32px 32px;
+  max-width: 380px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  box-sizing: border-box;
+}

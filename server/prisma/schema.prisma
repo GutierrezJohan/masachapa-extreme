@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Administrador {
+  id           Int     @id
+  nivel_acceso String? @default("basico") @db.VarChar(50)
+  departamento String? @db.VarChar(100)
+  Usuario      Usuario @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Administrador_ibfk_1")
+}
+
+model Categoria {
+  id              Int         @id @default(autoincrement())
+  nombre          String      @db.VarChar(100)
+  descripcion     String?     @db.Text
+  padre_id        Int?
+  Categoria       Categoria?  @relation("CategoriaToCategoria", fields: [padre_id], references: [id], onUpdate: NoAction, map: "Categoria_ibfk_1")
+  other_Categoria Categoria[] @relation("CategoriaToCategoria")
+  Producto        Producto[]
+
+  @@index([padre_id], map: "padre_id")
+}
+
+model Cliente {
+  id        Int     @id
+  direccion String  @db.Text
+  Usuario   Usuario @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Cliente_ibfk_1")
+  Orden     Orden[]
+}
+
+model Inventario {
+  id                  Int       @id @default(autoincrement())
+  producto_id         Int       @unique(map: "producto_id")
+  stock_actual        Int?      @default(0)
+  stock_minimo        Int?      @default(5)
+  ubicacion           String?   @db.VarChar(100)
+  fecha_actualizacion DateTime? @default(now()) @db.DateTime(0)
+  Producto            Producto  @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Inventario_ibfk_1")
+}
+
+model ItemOrden {
+  id              Int      @id @default(autoincrement())
+  orden_id        Int
+  producto_id     Int
+  cantidad        Int
+  precio_unitario Decimal  @db.Decimal(10, 2)
+  subtotal        Decimal  @db.Decimal(10, 2)
+  Orden           Orden    @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ItemOrden_ibfk_1")
+  Producto        Producto @relation(fields: [producto_id], references: [id], onUpdate: NoAction, map: "ItemOrden_ibfk_2")
+
+  @@index([orden_id], map: "idx_item_orden")
+  @@index([producto_id], map: "producto_id")
+}
+
+model Orden {
+  id              Int           @id @default(autoincrement())
+  cliente_id      Int
+  fecha           DateTime?     @default(now()) @db.DateTime(0)
+  estado          Orden_estado? @default(pendiente)
+  total           Decimal       @db.Decimal(10, 2)
+  direccion_envio String        @db.Text
+  metodo_pago     String        @db.VarChar(50)
+  ItemOrden       ItemOrden[]
+  Cliente         Cliente       @relation(fields: [cliente_id], references: [id], onUpdate: NoAction, map: "Orden_ibfk_1")
+
+  @@index([cliente_id], map: "idx_orden_cliente")
+  @@index([fecha], map: "idx_orden_fecha")
+}
+
+model Producto {
+  id                    Int         @id @default(autoincrement())
+  nombre                String      @db.VarChar(255)
+  descripcion           String?     @db.Text
+  precio                Decimal     @db.Decimal(10, 2)
+  marca                 String      @db.VarChar(100)
+  modelo_compatibilidad String?     @db.VarChar(255)
+  imagen_url            String?     @db.VarChar(500)
+  categoria_id          Int
+  activo                Boolean?    @default(true)
+  fecha_creacion        DateTime?   @default(now()) @db.DateTime(0)
+  Inventario            Inventario?
+  ItemOrden             ItemOrden[]
+  Categoria             Categoria   @relation(fields: [categoria_id], references: [id], onUpdate: NoAction, map: "Producto_ibfk_1")
+
+  @@index([activo], map: "idx_producto_activo")
+  @@index([categoria_id], map: "idx_producto_categoria")
+}
+
+model Usuario {
+  id             Int            @id @default(autoincrement())
+  email          String         @unique(map: "email") @db.VarChar(255)
+  password       String         @db.VarChar(255)
+  nombre         String         @db.VarChar(100)
+  telefono       String?        @db.VarChar(20)
+  fecha_registro DateTime?      @default(now()) @db.DateTime(0)
+  activo         Boolean?       @default(true)
+  tipo           Usuario_tipo
+  Administrador  Administrador?
+  Cliente        Cliente?
+}
+
+enum Orden_estado {
+  pendiente
+  confirmada
+  enviada
+  entregada
+  cancelada
+}
+
+enum Usuario_tipo {
+  cliente
+  administrador
+}

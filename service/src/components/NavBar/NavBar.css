@@ -1,0 +1,328 @@
+/* ===== NAVBAR PRINCIPAL - ESTILO PREMIUM ===== */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white; /* Fondo blanco sólido por defecto */
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+}
+
+.main-header.scrolled {
+  box-shadow: 0 6px 20px rgba(124, 92, 255, 0.12);
+  background: white; /* Fondo blanco sólido cuando se desplaza */
+}
+
+.navbar-toolbar {
+  --background: white; /* Fondo blanco sólido */
+  --min-height: 72px;
+  padding: 0;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-left, 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 40px;
+}
+
+/* ===== LOGO PREMIUM ===== */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.03);
+}
+
+.logo-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c5cff, #6ee7b7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  transform: rotate(30deg);
+}
+
+.logo-initials {
+  font-weight: 800;
+  font-size: 18px;
+  color: white;
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 24px;
+  background: linear-gradient(90deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+/* ===== BARRA DE BÚSQUEDA PREMIUM ===== */
+/* Estilos para el contenedor principal */
+.main-search {
+  --background: white;
+  --border-radius: 16px;
+  --placeholder-color: #64748b;
+  --placeholder-font-style: italic;
+  --placeholder-font-weight: 400;
+  height: 48px;
+  max-width: 600px;
+  width: 100%;
+  border: 1px solid rgba(124, 92, 255, 0.15);
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Estilos para el input interno */
+.main-search::part(native-input) {
+  border-radius: 16px !important;
+  background: transparent !important;
+  padding-left: 40px !important;
+  box-shadow: none !important;
+}
+
+.main-search::part(searchbar-input-container) {
+  border-radius: 16px !important;
+  background: transparent !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.main-search::part(input-container) {
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+/* Eliminar cualquier borde interno */
+.main-search::part(clear-button),
+.main-search::part(search-button) {
+  border-radius: 50% !important;
+}
+
+.main-search:hover, 
+.main-search:focus-within {
+  border-color: #7c5cff;
+  box-shadow: 0 4px 15px rgba(124, 92, 255, 0.15);
+}
+
+.main-search::part(search-icon) {
+  color: #7c5cff;
+  font-size: 20px;
+  margin-left: 12px;
+}
+
+.main-search::part(clear-button) {
+  color: #7c5cff;
+}
+
+/* Contenedor de búsqueda para desktop */
+.desktop-search {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.navbar-action-btn {
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.navbar-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.navbar-action-btn ion-icon {
+  font-size: 24px;
+  color: #334155;
+  transition: all 0.25s ease;
+}
+
+.navbar-action-btn:hover ion-icon {
+  color: #7c5cff;
+  transform: scale(1.1);
+}
+
+.cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  --background: linear-gradient(90deg, #7c5cff, #6ee7b7);
+  --color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  min-width: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(124, 92, 255, 0.4);
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0% { box-shadow: 0 0 0 0 rgba(124, 92, 255, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(124, 92, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(124, 92, 255, 0); }
+}
+
+.mobile-search-toggle {
+  display: none;
+}
+
+/* ===== BÚSQUEDA MÓVIL ===== */
+.mobile-search-container {
+  padding: 0 16px 12px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-search {
+  --background: white;
+  --border-radius: 14px;
+  --placeholder-color: #64748b;
+  height: 44px;
+  border: 1px solid rgba(124, 92, 255, 0.15);
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.mobile-search::part(native-input) {
+  border-radius: 14px !important;
+  background: transparent !important;
+  padding-left: 40px !important;
+}
+
+.mobile-search::part(searchbar-input-container) {
+  border-radius: 14px !important;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .navbar-center {
+    padding: 0 20px;
+  }
+  
+  .main-search {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-toolbar {
+    --min-height: 64px;
+  }
+  
+  .desktop-search {
+    display: none;
+  }
+  
+  .mobile-search-toggle {
+    display: block;
+  }
+  
+  .main-search {
+    display: none;
+  }
+  
+  .logo-text {
+    font-size: 22px;
+  }
+  
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 16px;
+  }
+  
+  .navbar-left, 
+  .navbar-right {
+    gap: 12px;
+  }
+  
+  .logo-text {
+    display: none;
+  }
+  
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .logo-initials {
+    font-size: 16px;
+  }
+  
+  .navbar-action-btn ion-icon {
+    font-size: 22px;
+  }
+  
+  .cart-badge {
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    padding: 1px 5px;
+    min-width: 16px;
+  }
+  
+  .main-search {
+    border-radius: 14px !important;
+  }
+  
+  .main-search::part(native-input),
+  .main-search::part(searchbar-input-container) {
+    border-radius: 14px !important;
+  }
+}
