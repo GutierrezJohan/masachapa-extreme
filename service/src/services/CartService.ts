@@ -17,8 +17,16 @@ export function getCart(): CartItem[] {
   }
 }
 
+function notify(items: CartItem[]) {
+  try {
+    const detail = { count: items.reduce((a, i) => a + (i.cantidad || 0), 0), items };
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail }));
+  } catch {}
+}
+
 function saveCart(items: CartItem[]) {
   try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {}
+  notify(items);
 }
 
 export function addToCart(item: CartItem) {
@@ -53,4 +61,10 @@ export function updateQuantity(id: number | string, delta: number) {
 
 export function countItems(): number {
   return getCart().reduce((acc, i) => acc + (i.cantidad || 0), 0);
+}
+
+export function onCartUpdated(handler: (e: CustomEvent<{count: number; items: CartItem[]}>) => void) {
+  const listener = (e: Event) => handler(e as CustomEvent<{count:number; items: CartItem[]}>);
+  window.addEventListener('cart:updated', listener as EventListener);
+  return () => window.removeEventListener('cart:updated', listener as EventListener);
 }

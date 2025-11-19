@@ -40,7 +40,7 @@ import {
 } from 'ionicons/icons';
 import './Home.css';
 import { getAllProducts as fetchProducts } from '../../services/ProductService';
-import { addToCart as cartAdd, getCart as cartGet, countItems as cartCountItems } from '../../services/CartService';
+import { addToCart as cartAdd, getCart as cartGet, countItems as cartCountItems, onCartUpdated } from '../../services/CartService';
 import NavBar from '../../components/NavBar/NavBar';
 import { useHistory } from 'react-router-dom';
 
@@ -84,6 +84,7 @@ const Home: React.FC = () => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [cart, setCart] = useState<Product[]>([]);
+  const [cartCount, setCartCount] = useState<number>(cartCountItems());
   const [selected, setSelected] = useState<Product | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [products, setProducts] = useState<Product[]>([]);
@@ -148,6 +149,12 @@ const Home: React.FC = () => {
     } catch {}
   }, []);
 
+  // Subscribe to cart updates to refresh NavBar count
+  useEffect(() => {
+    const off = onCartUpdated((e) => setCartCount(e.detail.count));
+    return off;
+  }, []);
+
   // Fetch dynamic products from backend
   useEffect(() => {
     let mounted = true;
@@ -191,8 +198,8 @@ const Home: React.FC = () => {
         title="Machapa Extreme"
         query={query}
         onQueryChange={(v) => setQuery(v)}
-        cartCount={cart.length}
-        onCartClick={() => {}}
+        cartCount={cartCount}
+        onCartClick={() => history.push('/cart')}
       />
 
       <IonContent fullscreen className="home-content">

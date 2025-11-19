@@ -36,6 +36,7 @@ import {
 import NavBar from '../../components/NavBar/NavBar';
 import { useHistory } from 'react-router-dom';
 import './Profile.css';
+import { getCart as cartGet, removeFromCart as cartRemove, updateQuantity as cartUpdate, onCartUpdated } from '../../services/CartService';
 
 const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
 
@@ -102,17 +103,15 @@ export default function Profile() {
     }
 
     try {
-      const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        const parsedCart: CartItem[] = JSON.parse(storedCart);
-        setCart(parsedCart);
-      } else {
-        setCart([]);
-      }
-    } catch {
-      setCart([]);
-    }
+      setCart(cartGet());
+    } catch { setCart([]); }
   }, [history]);
+
+  // Live updates when cart changes elsewhere
+  React.useEffect(() => {
+    const off = onCartUpdated(() => setCart(cartGet()));
+    return off;
+  }, []);
 
   const handleLogout = () => {
     try {
@@ -124,22 +123,13 @@ export default function Profile() {
   };
 
   const removeFromCart = (itemId: number | string) => {
-    const newCart = cart.filter(item => item.id !== itemId);
-    setCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
+    const list = cartRemove(itemId);
+    setCart(list);
   };
 
   const updateQuantity = (itemId: number | string, change: number) => {
-    const newCart = cart.map(item => {
-      if (item.id === itemId) {
-        const newQty = item.cantidad + change;
-        return newQty > 0 ? { ...item, cantidad: newQty } : item;
-      }
-      return item;
-    }).filter(item => item.cantidad > 0);
-    
-    setCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
+    const list = cartUpdate(itemId, change);
+    setCart(list);
   };
 
   const cartCount = cart.reduce((acc, i) => acc + (i.cantidad || 0), 0);

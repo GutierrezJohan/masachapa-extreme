@@ -12,6 +12,7 @@ import Payment from './pages/Payment/Payment';
 
 import Success from './pages/Success/Success';
 import ProductPage from './pages/Product/Product';
+import CartPage from './pages/Cart/Cart';
 import AdminProductsList from './pages/AdminProducts/AdminProductsList';
 import AdminProductCreate from './pages/AdminProducts/AdminProductCreate';
 import AdminRoute from './components/RouteGuards/AdminRoute';
@@ -81,6 +82,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/product/:id">
           <ProductPage />
+        </Route>
+        <Route exact path="/cart">
+          <CartPage />
         </Route>
         <AdminRoute exact path="/admin/products">
           <AdminProductsList />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonToolbar, IonTitle, IonButtons, IonBackButton, IonGrid, IonRow, IonCol, IonSpinner } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
 import ProductCard, { Product } from '../../components/ProductCard/ProductCard';
 import { addToCart as cartAdd } from '../../services/CartService';
@@ -12,6 +12,7 @@ import { countItems as cartCountItems } from '../../services/CartService';
 
 const Category: React.FC = () => {
   const { name } = useParams<{ name: string }>();
+  const history = useHistory();
   const decodedName = React.useMemo(() => {
     try {
       // Normalize cases where %2F comes through literally
@@ -58,7 +59,7 @@ const Category: React.FC = () => {
 
   return (
     <IonPage>
-      <NavBar title={`Categoria: ${decodedName || 'Todos'}`} query={''} onQueryChange={() => {}} cartCount={cartCountItems()} onCartClick={() => {}} />
+      <NavBar title={`Categoria: ${decodedName || 'Todos'}`} query={''} onQueryChange={() => {}} cartCount={cartCountItems()} onCartClick={() => history.push('/cart')} />
       <IonContent className="home-content">
         <IonHeader>
           <IonToolbar>
