@@ -3,6 +3,7 @@ import { IonPage, IonContent, IonInput, IonButton, IonItem, IonLabel, IonIcon, I
 import { personOutline, lockClosedOutline, logInOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
+import { syncAfterLogin } from '../../services/CartService';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -50,11 +51,11 @@ const Login: React.FC = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
+      // Sincronizar carrito invitado -> servidor antes de redirigir
+      try { await syncAfterLogin(); } catch {}
+
       setShowToast(true);
-      // Pequeño delay para feedback visual y luego redirigir
-      setTimeout(() => {
-        history.push('/profile');
-      }, 300);
+      setTimeout(() => { history.push('/profile'); }, 300);
     } catch (err: any) {
       setError(err?.message || 'No se pudo iniciar sesión');
       setShowToast(true);

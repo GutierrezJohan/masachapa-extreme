@@ -69,3 +69,39 @@ exports.getOne = async (req, res) => {
     return res.status(500).json({ error: 'No se pudo obtener el producto' });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id || Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const { nombre, descripcion, precio, stock, categoria, imagen, activo } = req.body || {};
+
+    // Basic field-level validation (optional fields allowed but if present must be valid)
+    if (precio !== undefined) {
+      const p = Number(precio);
+      if (Number.isNaN(p) || p < 0) return res.status(400).json({ error: 'Precio inválido' });
+    }
+    if (stock !== undefined) {
+      const s = Number(stock);
+      if (Number.isNaN(s) || s < 0) return res.status(400).json({ error: 'Stock inválido' });
+    }
+    if (categoria !== undefined && typeof categoria !== 'string') {
+      return res.status(400).json({ error: 'Categoría inválida' });
+    }
+    if (imagen !== undefined && typeof imagen !== 'string') {
+      return res.status(400).json({ error: 'Imagen inválida' });
+    }
+
+    try {
+      const product = await repo.updateProduct(id, { nombre, descripcion, precio, stock, categoria, imagen, activo });
+      return res.json({ product });
+    } catch (err) {
+      if (err.message === 'NOT_FOUND') return res.status(404).json({ error: 'Producto no encontrado' });
+      if (err.message === 'INVALID_PRICE') return res.status(400).json({ error: 'Precio inválido' });
+      if (err.message === 'INVALID_STOCK') return res.status(400).json({ error: 'Stock inválido' });
+      return res.status(500).json({ error: 'No se pudo actualizar el producto' });
+    }
+  } catch (e) {
+    return res.status(500).json({ error: 'No se pudo actualizar el producto' });
+  }
+};

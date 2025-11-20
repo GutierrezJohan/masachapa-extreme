@@ -10,7 +10,7 @@ import EditProfile from './pages/EditProfile/EditProfile';
 import Checkout from './pages/Checkout/Checkout';
 import Payment from './pages/Payment/Payment';
 
-import Success from './pages/Success/Success';
+import Success from './pages/Checkout/Success';
 import ProductPage from './pages/Product/Product';
 import CartPage from './pages/Cart/Cart';
 import AdminProductsList from './pages/AdminProducts/AdminProductsList';

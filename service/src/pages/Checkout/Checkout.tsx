@@ -21,7 +21,8 @@ import {
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import './Checkout.css';
-import { getCart as cartGet } from '../../services/CartService';
+import { getCart as cartGet, refreshCartFromServer } from '../../services/CartService';
+import { apiCheckout } from '../../services/OrderApiService';
 
 type CartItem = { id: number | string; nombre: string; precio: number; cantidad: number; imagen?: string };
 
@@ -67,12 +68,23 @@ const Checkout: React.FC = () => {
   const validEmail = useMemo(() => /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email), [email]);
   const canContinue = useMemo(() => nombre.trim().length>1 && validEmail && direccion.trim().length>3, [nombre, validEmail, direccion]);
 
-  const goPayment = () => {
+  const doCheckout = async () => {
     if (!canContinue) {
       setToast({open:true, msg:'Completa los datos requeridos', color:'danger'});
       return;
     }
-    history.push('/checkout/payment', { shipping: { nombre, email, telefono, direccion, notas }, subtotal });
+    try {
+      setLoading(true);
+      const order = await apiCheckout(direccion, 'pendiente');
+      await refreshCartFromServer();
+      setToast({open:true, msg:'Orden creada correctamente', color:'success'});
+      // Navegar a página de éxito con resumen
+      history.push('/checkout/success', { order });
+    } catch (e:any) {
+      setToast({open:true, msg: e.message || 'Error en checkout', color:'danger'});
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,7 +128,7 @@ const Checkout: React.FC = () => {
                     <IonTextarea value={notas} onIonChange={e=>setNotas(e.detail.value || '')} autoGrow />
                   </IonItem>
                 </IonList>
-                <IonButton expand="block" onClick={goPayment} disabled={!canContinue}>Continuar al pago</IonButton>
+                <IonButton expand="block" onClick={doCheckout} disabled={!canContinue || loading}>{loading ? 'Procesando...' : 'Finalizar compra'}</IonButton>
               </IonCardContent>
             </IonCard>
 

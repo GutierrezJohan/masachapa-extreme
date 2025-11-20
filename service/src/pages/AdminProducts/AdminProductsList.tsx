@@ -127,6 +127,9 @@ const AdminProductsList: React.FC = () => {
                   </IonRow>
                   <IonRow>
                     <IonCol size="12" className="ion-text-right">
+                      <IonButton color="primary" fill="outline" onClick={() => history.push(`/admin/products/${p.id}/edit`)} style={{ marginRight: 8 }}>
+                        Editar
+                      </IonButton>
                       <IonButton color="danger" fill="outline" onClick={() => setConfirmId(p.id)}>
                         <IonIcon icon={trashOutline} slot="start" /> Eliminar
                       </IonButton>

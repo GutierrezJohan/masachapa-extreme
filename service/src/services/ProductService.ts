@@ -131,3 +131,27 @@ export async function getRelatedProducts(categoria: string, excludeId: number | 
       .slice(0, limit);
   }
 }
+
+export async function updateProduct(id: number, input: Partial<Omit<Product, 'id' | 'creadoEn'>>): Promise<Product> {
+  try {
+    const res = await fetch(`${API_URL}/api/products/${id} `, {
+      method: 'PUT',
+      headers: headers(true),
+      body: JSON.stringify(input),
+    });
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    return (data?.product || data) as Product;
+  } catch {
+    // Local optimistic update fallback
+    const list = loadLocal();
+    const idx = list.findIndex(p => p.id === id);
+    if (idx >= 0) {
+      const updated: Product = { ...list[idx], ...input } as Product;
+      list[idx] = updated;
+      saveLocal(list);
+      return updated;
+    }
+    throw new Error('No se pudo actualizar');
+  }
+}

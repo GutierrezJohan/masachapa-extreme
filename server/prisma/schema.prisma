@@ -85,6 +85,7 @@ model Producto {
   fecha_creacion        DateTime?   @default(now()) @db.DateTime(0)
   Inventario            Inventario?
   ItemOrden             ItemOrden[]
+  ItemCarrito           ItemCarrito[]
   Categoria             Categoria   @relation(fields: [categoria_id], references: [id], onUpdate: NoAction, map: "Producto_ibfk_1")
 
   @@index([activo], map: "idx_producto_activo")
@@ -103,6 +104,7 @@ model Usuario {
   tipo           Usuario_tipo
   Administrador  Administrador?
   Cliente        Cliente?
+  Carrito        Carrito?
 }
 
 enum Orden_estado {
@@ -116,4 +118,26 @@ enum Orden_estado {
 enum Usuario_tipo {
   cliente
   administrador
+}
+
+model Carrito {
+  id          Int          @id @default(autoincrement())
+  usuario_id  Int          @unique(map: "usuario_id")
+  Usuario     Usuario      @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Carrito_ibfk_1")
+  ItemCarrito ItemCarrito[]
+}
+
+model ItemCarrito {
+  id              Int       @id @default(autoincrement())
+  carrito_id      Int
+  producto_id     Int
+  cantidad        Int
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  subtotal        Decimal   @db.Decimal(10, 2)
+  Carrito         Carrito   @relation(fields: [carrito_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ItemCarrito_ibfk_1")
+  Producto        Producto  @relation(fields: [producto_id], references: [id], onUpdate: NoAction, map: "ItemCarrito_ibfk_2")
+
+  @@index([carrito_id], map: "idx_item_carrito")
+  @@index([producto_id], map: "idx_item_carrito_producto")
+  @@unique([carrito_id, producto_id], map: "uniq_item_carrito_producto")
 }
